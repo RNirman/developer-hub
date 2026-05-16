@@ -1,19 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
 
 export default function Index({ auth, threads }) {
-    // Inertia's useForm hook handles state, submission, and validation errors
+    const [liveThreads, setLiveThreads] = useState(threads);
+
     const { data, setData, post, processing, reset, errors } = useForm({
         title: '',
         category: 'general',
         body: '',
     });
 
+    useEffect(() => {
+        window.Echo.channel('threads')
+            .listen('ThreadCreated', (e) => {
+                if (e.thread.user_id !== auth.user.id) {
+                     setLiveThreads(prevThreads => [e.thread, ...prevThreads]);
+                }
+            });
+
+        // Cleanup listener when the component unmounts
+        return () => {
+            window.Echo.leaveChannel('threads');
+        };
+    }, []);
+
     const submit = (e) => {
         e.preventDefault();
-        // Post to our named route, and clear the form if successful
-        post(route('threads.store'), { onSuccess: () => reset() });
+        post(route('threads.store'), { 
+            onSuccess: (page) => {
+                reset();
+                setLiveThreads(page.props.threads);
+            } 
+        });
     };
 
     return (
@@ -25,7 +44,6 @@ export default function Index({ auth, threads }) {
 
             <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
                 
-                {/* --- NEW THREAD FORM --- */}
                 <form onSubmit={submit} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mb-8">
                     <div className="flex gap-4 mb-4">
                         <div className="flex-1">
@@ -71,9 +89,8 @@ export default function Index({ auth, threads }) {
                     </div>
                 </form>
 
-                {/* --- THREAD FEED --- */}
                 <div className="space-y-4">
-                    {threads.map(thread => (
+                    {liveThreads.map(thread => (
                         <div key={thread.id} className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow flex flex-col gap-2">
                             <div className="flex justify-between items-center">
                                 <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">{thread.user.name}</span>
@@ -88,7 +105,7 @@ export default function Index({ auth, threads }) {
                         </div>
                     ))}
                     
-                    {threads.length === 0 && (
+                    {liveThreads.length === 0 && (
                         <div className="text-center text-gray-500 dark:text-gray-400 py-8">
                             No discussions yet. Be the first to post!
                         </div>

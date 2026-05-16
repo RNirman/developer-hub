@@ -6,6 +6,7 @@ use App\Models\Thread;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
+use App\Events\ThreadCreated;
 
 class ThreadController extends Controller
 {
@@ -14,11 +15,8 @@ class ThreadController extends Controller
      */
     public function index()
     {
-        // Fetch threads, newest first. 
-        // We use 'with' to grab the author's name at the same time (Eager Loading) to prevent extra database queries.
         $threads = Thread::with('user:id,name')->latest()->get();
 
-        // Pass the data to a React component named 'Threads/Index'
         return Inertia::render('Threads/Index', [
             'threads' => $threads
         ]);
@@ -29,20 +27,18 @@ class ThreadController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validate the incoming React form data
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'body' => 'required|string',
             'category' => 'required|string|max:50',
         ]);
 
-        // 2. Create the thread attached to the currently logged-in user
         $thread = Auth::user()->threads()->create($validated);
 
-        // TODO: In the next phase, we will trigger our Reverb WebSocket Event here!
-        // ThreadCreated::dispatch($thread);
+        $thread->load('user:id,name');
 
-        // 3. Redirect back to the index (Inertia handles this without a full page reload)
+        ThreadCreated::dispatch($thread);
+
         return redirect()->route('threads.index');
     }
 }
