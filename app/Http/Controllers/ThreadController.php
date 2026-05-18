@@ -15,7 +15,7 @@ class ThreadController extends Controller
      */
     public function index()
     {
-        $threads = Thread::with('user:id,name')->latest()->get();
+        $threads = Thread::with(['user:id,name', 'comments.user:id,name'])->latest()->get();
 
         return Inertia::render('Threads/Index', [
             'threads' => $threads
