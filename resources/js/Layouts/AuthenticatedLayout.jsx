@@ -4,6 +4,7 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import { Cpu } from 'lucide-react';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
@@ -12,25 +13,29 @@ export default function AuthenticatedLayout({ header, children }) {
         useState(false);
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
-            <nav className="border-b border-gray-100 bg-white dark:border-gray-700 dark:bg-gray-800">
+        <div className="min-h-screen bg-blueprint-bg text-blueprint-fg font-sans relative selection:bg-blueprint-accent/30 selection:text-white">
+            {/* Blueprint Grid Background - Opacity reduced */}
+            <div className="fixed inset-0 bg-blueprint-pattern bg-blueprint opacity-10 z-0 pointer-events-none"></div>
+            
+            <nav className="border-b border-blueprint-grid bg-blueprint-bg/80 backdrop-blur-sm relative z-10">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between">
                         <div className="flex">
                             <div className="flex shrink-0 items-center">
-                                <Link href="/">
-                                    <ApplicationLogo className="block h-9 w-auto fill-current text-gray-800 dark:text-gray-200" />
+                                <Link href="/" className="flex items-center gap-2">
+                                    <div className="border border-blueprint-accent p-1.5 bg-blueprint-bg rounded-md">
+                                        <Cpu className="w-5 h-5 text-blueprint-accent" />
+                                    </div>
+                                    <span className="text-blueprint-accent font-bold tracking-wider text-lg hidden sm:block font-mono">DEV_HUB</span>
                                 </Link>
                             </div>
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route('dashboard')}
-                                    active={route().current('dashboard')}
+                                <NavLink 
+                                    href={route('threads.index')} 
+                                    active={route().current('threads.index')}
+                                    className="font-medium tracking-wide text-sm border-blueprint-accent"
                                 >
-                                    Dashboard
-                                </NavLink>
-                                <NavLink href={route('threads.index')} active={route().current('threads.index')}>
                                     Discussions
                                 </NavLink>
                             </div>
@@ -43,7 +48,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                         <span className="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none dark:bg-gray-800 dark:text-gray-400 dark:hover:text-gray-300"
+                                                className="inline-flex items-center rounded-md border border-transparent bg-transparent px-3 py-2 text-sm font-medium tracking-wide text-blueprint-secondary transition duration-150 ease-in-out hover:text-blueprint-accent focus:outline-none"
                                             >
                                                 {user.name}
 
@@ -63,9 +68,10 @@ export default function AuthenticatedLayout({ header, children }) {
                                         </span>
                                     </Dropdown.Trigger>
 
-                                    <Dropdown.Content>
+                                    <Dropdown.Content contentClasses="py-1 bg-blueprint-bg border border-blueprint-grid rounded-md shadow-lg">
                                         <Dropdown.Link
                                             href={route('profile.edit')}
+                                            className="text-blueprint-fg hover:bg-blueprint-grid hover:text-blueprint-accent text-sm"
                                         >
                                             Profile
                                         </Dropdown.Link>
@@ -73,6 +79,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                             href={route('logout')}
                                             method="post"
                                             as="button"
+                                            className="text-blueprint-fg hover:bg-blueprint-grid hover:text-blueprint-accent text-sm"
                                         >
                                             Log Out
                                         </Dropdown.Link>
@@ -88,7 +95,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                         (previousState) => !previousState,
                                     )
                                 }
-                                className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none dark:text-gray-500 dark:hover:bg-gray-900 dark:hover:text-gray-400 dark:focus:bg-gray-900 dark:focus:text-gray-400"
+                                className="inline-flex items-center justify-center rounded-md p-2 text-blueprint-secondary transition duration-150 ease-in-out hover:bg-blueprint-grid hover:text-blueprint-accent focus:bg-blueprint-grid focus:text-blueprint-accent focus:outline-none"
                             >
                                 <svg
                                     className="h-6 w-6"
@@ -127,36 +134,37 @@ export default function AuthenticatedLayout({ header, children }) {
                 <div
                     className={
                         (showingNavigationDropdown ? 'block' : 'hidden') +
-                        ' sm:hidden'
+                        ' sm:hidden border-t border-blueprint-grid'
                     }
                 >
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
-                            href={route('dashboard')}
-                            active={route().current('dashboard')}
+                            href={route('threads.index')}
+                            active={route().current('threads.index')}
                         >
-                            Dashboard
+                            Discussions
                         </ResponsiveNavLink>
                     </div>
 
-                    <div className="border-t border-gray-200 pb-1 pt-4 dark:border-gray-600">
+                    <div className="border-t border-blueprint-grid pb-1 pt-4">
                         <div className="px-4">
-                            <div className="text-base font-medium text-gray-800 dark:text-gray-200">
+                            <div className="text-base font-semibold text-blueprint-accent">
                                 {user.name}
                             </div>
-                            <div className="text-sm font-medium text-gray-500">
+                            <div className="text-sm font-medium text-blueprint-secondary">
                                 {user.email}
                             </div>
                         </div>
 
                         <div className="mt-3 space-y-1">
-                            <ResponsiveNavLink href={route('profile.edit')}>
+                            <ResponsiveNavLink href={route('profile.edit')} className="text-blueprint-fg hover:bg-blueprint-grid hover:text-blueprint-accent border-transparent">
                                 Profile
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 method="post"
                                 href={route('logout')}
                                 as="button"
+                                className="text-blueprint-fg hover:bg-blueprint-grid hover:text-blueprint-accent border-transparent"
                             >
                                 Log Out
                             </ResponsiveNavLink>
@@ -166,14 +174,14 @@ export default function AuthenticatedLayout({ header, children }) {
             </nav>
 
             {header && (
-                <header className="bg-white shadow dark:bg-gray-800">
-                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <header className="bg-blueprint-bg/80 border-b border-blueprint-grid backdrop-blur-sm relative z-10">
+                    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 border-l-4 border-blueprint-accent">
                         {header}
                     </div>
                 </header>
             )}
 
-            <main>{children}</main>
+            <main className="relative z-10">{children}</main>
         </div>
     );
 }
