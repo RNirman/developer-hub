@@ -6,7 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import toast, { Toaster } from 'react-hot-toast';
-import { MessageSquare, Send, Hash, CornerDownRight } from 'lucide-react';
+import { MessageSquare, Send, Hash, CornerDownRight, ArrowBigUp } from 'lucide-react';
 
 export default function Index({ auth, threads }) {
     const [liveThreads, setLiveThreads] = useState(threads);
@@ -75,6 +75,14 @@ export default function Index({ auth, threads }) {
             }
         });
     };
+    const upvoteThread = (threadId) => {
+        router.post(route('threads.upvote', threadId), {}, {
+            preserveScroll: true,
+            onSuccess: (page) => {
+                setLiveThreads(page.props.threads);
+            }
+        });
+    };
 
     return (
         <AuthenticatedLayout
@@ -131,7 +139,7 @@ export default function Index({ auth, threads }) {
                             <div className="flex justify-between items-center mb-2 border-b border-blueprint-grid pb-2">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-blueprint-accent opacity-80"></div>
-                                    <span className="text-sm font-semibold text-blueprint-secondary">{thread.user.name}</span>
+                                    <span className="text-sm font-semibold text-blueprint-secondary">{thread.user.name} <span className="text-[0.7rem] bg-blueprint-bg border border-blueprint-grid px-1.5 py-0.5 rounded ml-1 text-blueprint-accent font-mono" title="Node Power / Reputation">[PWR: {thread.user.reputation || 0}]</span></span>
                                 </div>
                                 <span className="flex items-center gap-1 text-[0.7rem] px-2 py-1 bg-blueprint-grid/50 border border-blueprint-grid rounded-full text-blueprint-accent font-medium tracking-wide">
                                     <Hash className="w-3 h-3" /> {thread.category}
@@ -163,6 +171,23 @@ export default function Index({ auth, threads }) {
                                 >
                                     {thread.body}
                                 </ReactMarkdown>
+                            </div>
+
+                            <div className="flex items-center gap-3 mb-2">
+                                <button
+                                    onClick={() => upvoteThread(thread.id)}
+                                    disabled={thread.user_has_voted || thread.user_id === auth.user.id}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors border ${
+                                        thread.user_has_voted 
+                                        ? 'bg-blueprint-accent text-blueprint-bg border-blueprint-accent'
+                                        : (thread.user_id === auth.user.id
+                                            ? 'bg-blueprint-bg/30 text-blueprint-secondary/50 border-blueprint-grid cursor-not-allowed'
+                                            : 'bg-blueprint-bg/50 text-blueprint-secondary border-blueprint-grid hover:border-blueprint-accent hover:text-blueprint-accent')
+                                    }`}
+                                >
+                                    <ArrowBigUp className={`w-4 h-4 ${thread.user_has_voted ? 'fill-current' : ''}`} />
+                                    {thread.votes_count || 0}
+                                </button>
                             </div>
 
                             <div className="border-t border-blueprint-grid pt-4 mt-2">
