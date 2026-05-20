@@ -78,6 +78,3 @@ Because Developer Hub utilizes real-time WebSockets and modern frontend tooling,
 
 Visit `http://localhost:8000` in your browser to access the application.
 
-## License
-
-The Developer Hub is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
