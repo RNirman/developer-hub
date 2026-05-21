@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\PostController as AdminPostController;
+use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -35,6 +39,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/threads/{thread}/upvote', [ThreadController::class, 'upvote'])->name('threads.upvote');
     Route::post('/threads/{thread}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+});
+
+// Admin Routes
+Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    
+    Route::resource('users', AdminUserController::class);
+    Route::post('users/{user}/update-role', [AdminUserController::class, 'updateRole'])->name('users.update-role');
+    
+    Route::resource('posts', AdminPostController::class);
+    Route::post('posts/{id}/update-status', [AdminPostController::class, 'updateStatus'])->name('posts.update-status');
+    
+    Route::resource('settings', AdminSettingController::class)->only(['index', 'update']);
 });
 
 require __DIR__.'/auth.php';

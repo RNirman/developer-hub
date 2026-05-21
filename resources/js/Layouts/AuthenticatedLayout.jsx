@@ -38,6 +38,15 @@ export default function AuthenticatedLayout({ header, children }) {
                                 >
                                     Discussions
                                 </NavLink>
+                                {user.role === 'admin' && (
+                                    <NavLink 
+                                        href={route('admin.dashboard')} 
+                                        active={route().current('admin.*')}
+                                        className="font-medium tracking-wide text-sm border-blueprint-accent text-orange-400"
+                                    >
+                                        Admin
+                                    </NavLink>
+                                )}
                             </div>
                         </div>
 

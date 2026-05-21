@@ -237,7 +237,7 @@ export default function Index({ auth, threads }) {
                                         <div key={comment.id} className="flex gap-2 text-sm pl-4 border-l-2 border-blueprint-grid hover:border-blueprint-accent/30 transition-colors">
                                             <CornerDownRight className="w-4 h-4 text-blueprint-secondary shrink-0 mt-0.5" />
                                             <div>
-                                                <span className="font-semibold text-blueprint-secondary text-sm mr-2 flex items-center gap-1 inline-flex">
+                                                <span className="font-semibold text-blueprint-secondary text-sm mr-2 flex items-center gap-1">
                                                     {comment.user.name}
                                                     {comment.user.role === 'admin' && (
                                                         <Shield className="w-3 h-3 text-blueprint-accent" title="System Admin" />

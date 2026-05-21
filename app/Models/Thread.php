@@ -10,7 +10,7 @@ class Thread extends Model
     use HasFactory;
 
     // Allow these fields to be saved from our controller
-    protected $fillable = ['title', 'body', 'category'];
+    protected $fillable = ['title', 'body', 'category', 'status'];
 
     // A thread belongs to the user who created it
     public function user()

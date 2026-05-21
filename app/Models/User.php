@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -57,8 +58,28 @@ class User extends Authenticatable
         return $this->hasMany(Vote::class);
     }
 
+    public function auditLogs()
+    {
+        return $this->hasMany(AuditLog::class);
+    }
+
     public function isAdmin()
     {
         return $this->role === 'admin';
+    }
+
+    public function hasRole($role)
+    {
+        return $this->role === $role;
+    }
+
+    public function hasPermission($permissionName)
+    {
+        $permissions = Permission::where('name', $permissionName)
+            ->join('role_permission', 'permissions.id', '=', 'role_permission.permission_id')
+            ->where('role_permission.role', $this->role)
+            ->exists();
+
+        return $permissions || $this->isAdmin();
     }
 }
