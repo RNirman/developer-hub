@@ -19,8 +19,8 @@ class ThreadController extends Controller
         $userId = Auth::id();
         
         $threads = Thread::with([
-            'user:id,name,reputation', 
-            'comments.user:id,name'
+            'user:id,name,reputation,role', 
+            'comments.user:id,name,role'
         ])
         ->withCount('votes')
         ->latest()
@@ -79,5 +79,20 @@ class ThreadController extends Controller
         }
 
         return redirect()->route('threads.index');
+    }
+
+    /**
+     * Delete a thread.
+     */
+    public function destroy(Thread $thread)
+    {
+        $user = Auth::user();
+
+        if ($user->isAdmin() || $user->id === $thread->user_id) {
+            $thread->delete();
+            return back()->with('success', 'Thread deleted successfully.');
+        }
+
+        return back()->with('error', 'Unauthorized access.');
     }
 }

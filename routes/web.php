@@ -31,8 +31,10 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/threads', [ThreadController::class, 'index'])->name('threads.index');
     Route::post('/threads', [ThreadController::class, 'store'])->name('threads.store');
+    Route::delete('/threads/{thread}', [ThreadController::class, 'destroy'])->name('threads.destroy');
     Route::post('/threads/{thread}/upvote', [ThreadController::class, 'upvote'])->name('threads.upvote');
     Route::post('/threads/{thread}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
 require __DIR__.'/auth.php';

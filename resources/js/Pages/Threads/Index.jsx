@@ -6,7 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import toast, { Toaster } from 'react-hot-toast';
-import { MessageSquare, Send, Hash, CornerDownRight, ArrowBigUp } from 'lucide-react';
+import { MessageSquare, Send, Hash, CornerDownRight, ArrowBigUp, Shield, Trash2 } from 'lucide-react';
 
 export default function Index({ auth, threads }) {
     const [liveThreads, setLiveThreads] = useState(threads);
@@ -75,6 +75,7 @@ export default function Index({ auth, threads }) {
             }
         });
     };
+
     const upvoteThread = (threadId) => {
         router.post(route('threads.upvote', threadId), {}, {
             preserveScroll: true,
@@ -82,6 +83,29 @@ export default function Index({ auth, threads }) {
                 setLiveThreads(page.props.threads);
             }
         });
+    };
+
+    const deleteThread = (threadId) => {
+        if (confirm('Are you sure you want to delete this thread?')) {
+            router.delete(route('threads.destroy', threadId), {
+                preserveScroll: true,
+                onSuccess: (page) => {
+                    setLiveThreads(page.props.threads);
+                    toast.success('Thread deleted');
+                }
+            });
+        }
+    };
+
+    const deleteComment = (commentId) => {
+        if (confirm('Are you sure you want to delete this comment?')) {
+            router.delete(route('comments.destroy', commentId), {
+                preserveScroll: true,
+                onSuccess: (page) => {
+                    setLiveThreads(page.props.threads);
+                }
+            });
+        }
     };
 
     return (
@@ -139,7 +163,13 @@ export default function Index({ auth, threads }) {
                             <div className="flex justify-between items-center mb-2 border-b border-blueprint-grid pb-2">
                                 <div className="flex items-center gap-2">
                                     <div className="w-2 h-2 rounded-full bg-blueprint-accent opacity-80"></div>
-                                    <span className="text-sm font-semibold text-blueprint-secondary">{thread.user.name} <span className="text-[0.7rem] bg-blueprint-bg border border-blueprint-grid px-1.5 py-0.5 rounded ml-1 text-blueprint-accent font-mono" title="Node Power / Reputation">[PWR: {thread.user.reputation || 0}]</span></span>
+                                    <span className="text-sm font-semibold text-blueprint-secondary flex items-center gap-1">
+                                        {thread.user.name} 
+                                        {thread.user.role === 'admin' && (
+                                            <Shield className="w-3 h-3 text-blueprint-accent" title="System Admin" />
+                                        )}
+                                        <span className="text-[0.7rem] bg-blueprint-bg border border-blueprint-grid px-1.5 py-0.5 rounded ml-1 text-blueprint-accent font-mono" title="Node Power / Reputation">[PWR: {thread.user.reputation || 0}]</span>
+                                    </span>
                                 </div>
                                 <span className="flex items-center gap-1 text-[0.7rem] px-2 py-1 bg-blueprint-grid/50 border border-blueprint-grid rounded-full text-blueprint-accent font-medium tracking-wide">
                                     <Hash className="w-3 h-3" /> {thread.category}
@@ -188,6 +218,17 @@ export default function Index({ auth, threads }) {
                                     <ArrowBigUp className={`w-4 h-4 ${thread.user_has_voted ? 'fill-current' : ''}`} />
                                     {thread.votes_count || 0}
                                 </button>
+
+                                {(auth.user.role === 'admin' || auth.user.id === thread.user_id) && (
+                                    <button
+                                        onClick={() => deleteThread(thread.id)}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors border bg-blueprint-bg/30 text-red-400/70 border-red-900/30 hover:border-red-500/50 hover:text-red-400 ml-auto"
+                                        title="Delete Thread"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                        Delete
+                                    </button>
+                                )}
                             </div>
 
                             <div className="border-t border-blueprint-grid pt-4 mt-2">
@@ -196,9 +237,23 @@ export default function Index({ auth, threads }) {
                                         <div key={comment.id} className="flex gap-2 text-sm pl-4 border-l-2 border-blueprint-grid hover:border-blueprint-accent/30 transition-colors">
                                             <CornerDownRight className="w-4 h-4 text-blueprint-secondary shrink-0 mt-0.5" />
                                             <div>
-                                                <span className="font-semibold text-blueprint-secondary text-sm mr-2">{comment.user.name}:</span>
+                                                <span className="font-semibold text-blueprint-secondary text-sm mr-2 flex items-center gap-1 inline-flex">
+                                                    {comment.user.name}
+                                                    {comment.user.role === 'admin' && (
+                                                        <Shield className="w-3 h-3 text-blueprint-accent" title="System Admin" />
+                                                    )}:
+                                                </span>
                                                 <span className="text-blueprint-fg/80 text-sm">{comment.body}</span>
                                             </div>
+                                            {(auth.user.role === 'admin' || auth.user.id === comment.user_id) && (
+                                                <button 
+                                                    onClick={() => deleteComment(comment.id)}
+                                                    className="ml-auto text-red-400/50 hover:text-red-400 transition-colors"
+                                                    title="Delete Comment"
+                                                >
+                                                    <Trash2 className="w-3 h-3" />
+                                                </button>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
