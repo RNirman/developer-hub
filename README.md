@@ -30,7 +30,7 @@ Make sure you have the following installed on your local machine:
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/RNirman/developer-hub.git
    cd developer-hub
    ```
 
