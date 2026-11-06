@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
 import { motion } from 'framer-motion';
-import { Terminal, Code2, Users, Rocket, Layers, Shield, ChevronRight, Settings, Cpu, HardDrive } from 'lucide-react';
+import { Terminal, Code2, Users, Rocket, Layers, Shield, ChevronRight, Settings, Cpu, HardDrive, LogOut } from 'lucide-react';
 
 export default function Welcome({ auth, laravelVersion, phpVersion }) {
     const features = [
@@ -64,10 +64,33 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
 
                             <nav className="flex items-center gap-6">
                                 {auth.user ? (
-                                    <Link href={route('threads.index')} className="text-sm font-semibold text-blueprint-fg hover:text-blueprint-accent transition-colors flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-blueprint-alert rounded-full animate-pulse"></span>
-                                        Discussions
-                                    </Link>
+                                    <div className="flex items-center gap-4 sm:gap-6">
+                                        {auth.user.role === 'admin' && (
+                                            <Link 
+                                                href={route('admin.dashboard')} 
+                                                className="text-sm font-semibold text-orange-400 hover:text-orange-300 transition-colors font-mono"
+                                            >
+                                                Admin
+                                            </Link>
+                                        )}
+                                        <Link href={route('threads.index')} className="text-sm font-semibold text-blueprint-fg hover:text-blueprint-accent transition-colors flex items-center gap-2">
+                                            <span className="w-2 h-2 bg-blueprint-alert rounded-full animate-pulse"></span>
+                                            Discussions
+                                        </Link>
+                                        <span className="text-xs font-mono text-blueprint-secondary hidden sm:inline">
+                                            {auth.user.name}
+                                        </span>
+                                        <Link
+                                            href={route('logout')}
+                                            method="post"
+                                            as="button"
+                                            className="flex items-center gap-1.5 text-xs font-mono font-medium px-3 py-1.5 border border-blueprint-grid bg-blueprint-bg/60 rounded-md text-blueprint-secondary hover:text-blueprint-alert hover:border-blueprint-alert/50 transition-colors"
+                                            title="Log Out"
+                                        >
+                                            <LogOut className="w-3.5 h-3.5" />
+                                            <span>Log Out</span>
+                                        </Link>
+                                    </div>
                                 ) : (
                                     <>
                                         <Link href={route('login')} className="text-sm font-semibold text-blueprint-secondary hover:text-blueprint-accent transition-colors">
@@ -99,10 +122,17 @@ export default function Welcome({ auth, laravelVersion, phpVersion }) {
                                     </p>
 
                                     <div className="flex flex-wrap gap-4">
-                                        <Link href={route('register')} className="group flex items-center gap-2 bg-blueprint-accent text-blueprint-bg px-6 py-3 font-bold tracking-wide hover:bg-white transition-colors border border-blueprint-accent rounded-md">
-                                            Create Workspace
-                                            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                        </Link>
+                                        {auth.user ? (
+                                            <Link href={route('threads.index')} className="group flex items-center gap-2 bg-blueprint-accent text-blueprint-bg px-6 py-3 font-bold tracking-wide hover:bg-white transition-colors border border-blueprint-accent rounded-md">
+                                                Go to Discussions
+                                                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                            </Link>
+                                        ) : (
+                                            <Link href={route('register')} className="group flex items-center gap-2 bg-blueprint-accent text-blueprint-bg px-6 py-3 font-bold tracking-wide hover:bg-white transition-colors border border-blueprint-accent rounded-md">
+                                                Create Workspace
+                                                <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                            </Link>
+                                        )}
                                         <a href="#features" className="flex items-center gap-2 px-6 py-3 border border-blueprint-grid hover:border-blueprint-secondary text-blueprint-secondary font-medium transition-colors rounded-md bg-blueprint-bg/50 backdrop-blur">
                                             View Features
                                         </a>

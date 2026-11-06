@@ -2,15 +2,20 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
+import { Link, usePage, router } from '@inertiajs/react';
 import { useState } from 'react';
-import { Cpu } from 'lucide-react';
+import { Cpu, LogOut } from 'lucide-react';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+
+    const handleLogout = (e) => {
+        if (e) e.preventDefault();
+        router.post(route('logout'));
+    };
 
     return (
         <div className="min-h-screen bg-blueprint-bg text-blueprint-fg font-sans relative selection:bg-blueprint-accent/30 selection:text-white">
@@ -50,8 +55,8 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
                         </div>
 
-                        <div className="hidden sm:ms-6 sm:flex sm:items-center">
-                            <div className="relative ms-3">
+                        <div className="hidden sm:ms-6 sm:flex sm:items-center sm:gap-3">
+                            <div className="relative">
                                 <Dropdown>
                                     <Dropdown.Trigger>
                                         <span className="inline-flex rounded-md">
@@ -84,17 +89,28 @@ export default function AuthenticatedLayout({ header, children }) {
                                         >
                                             Profile
                                         </Dropdown.Link>
-                                        <Dropdown.Link
-                                            href={route('logout')}
-                                            method="post"
-                                            as="button"
-                                            className="text-blueprint-fg hover:bg-blueprint-grid hover:text-blueprint-accent text-sm"
+                                        <button
+                                            type="button"
+                                            onClick={handleLogout}
+                                            className="flex w-full items-center gap-2 px-4 py-2 text-start text-sm leading-5 text-blueprint-fg hover:bg-blueprint-grid hover:text-blueprint-alert transition duration-150 ease-in-out focus:outline-none"
                                         >
+                                            <LogOut className="w-4 h-4" />
                                             Log Out
-                                        </Dropdown.Link>
+                                        </button>
                                     </Dropdown.Content>
                                 </Dropdown>
                             </div>
+
+                            {/* Direct visible Log Out button */}
+                            <button
+                                type="button"
+                                onClick={handleLogout}
+                                className="inline-flex items-center gap-1.5 rounded-md border border-blueprint-grid bg-blueprint-bg/60 px-3 py-1.5 text-xs font-mono font-medium text-blueprint-secondary hover:text-blueprint-alert hover:border-blueprint-alert/50 transition duration-150 ease-in-out focus:outline-none"
+                                title="Log Out"
+                            >
+                                <LogOut className="w-3.5 h-3.5" />
+                                <span className="hidden md:inline">Log Out</span>
+                            </button>
                         </div>
 
                         <div className="-me-2 flex items-center sm:hidden">
@@ -169,14 +185,14 @@ export default function AuthenticatedLayout({ header, children }) {
                             <ResponsiveNavLink href={route('profile.edit')} className="text-blueprint-fg hover:bg-blueprint-grid hover:text-blueprint-accent border-transparent">
                                 Profile
                             </ResponsiveNavLink>
-                            <ResponsiveNavLink
-                                method="post"
-                                href={route('logout')}
-                                as="button"
-                                className="text-blueprint-fg hover:bg-blueprint-grid hover:text-blueprint-accent border-transparent"
+                            <button
+                                type="button"
+                                onClick={handleLogout}
+                                className="flex w-full items-center gap-2 border-l-4 border-transparent py-2 pe-4 ps-3 text-xs font-bold uppercase tracking-widest text-blueprint-secondary/70 hover:border-blueprint-alert hover:bg-blueprint-grid/50 hover:text-blueprint-alert transition duration-150 ease-in-out focus:outline-none"
                             >
+                                <LogOut className="w-4 h-4" />
                                 Log Out
-                            </ResponsiveNavLink>
+                            </button>
                         </div>
                     </div>
                 </div>
